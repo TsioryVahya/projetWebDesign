@@ -17,6 +17,18 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Ajouter les permissions pour le nouveau document root
+RUN echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>" >> /etc/apache2/apache2.conf
+
+# Créer les dossiers nécessaires dans writable et fixer les permissions
+RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
+    && chown -R www-data:www-data writable \
+    && chmod -R 775 writable
+
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

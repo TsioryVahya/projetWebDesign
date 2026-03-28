@@ -1,0 +1,29 @@
+# Disable directory browsing
+Options -Indexes
+
+# ----------------------------------------------------------------------
+# | Rewrite engine                                                     |
+# ----------------------------------------------------------------------
+
+# 1. Enable mod_rewrite
+# 2. Set the base path (optional, but good practice)
+# 3. Handle requests to non-existent files/directories via index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Check if the requested file/directory exists
+    # If not, rewrite the URL to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # If mod_rewrite is not installed, all 404's
+    # can be sent to index.php, and everything works as normal.
+    # Submitted by: Elliot Haughin
+
+    ErrorDocument 404 /index.php
+</IfModule>
