@@ -11,7 +11,7 @@
             <article class="article-card <?= $is_main ? 'main-article' : '' ?>">
                 <?php if (!empty($article['image_principale'])): ?>
                     <a href="<?= esc($article_url) ?>">
-                        <img src="<?= esc($article['image_principale']) ?>" 
+                        <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" 
                              alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>"
                              loading="<?= $index < 2 ? 'eager' : 'lazy' ?>"
                              decoding="async"

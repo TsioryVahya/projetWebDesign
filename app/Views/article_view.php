@@ -14,7 +14,7 @@
 
     <?php if (!empty($article['image_principale'])): ?>
         <figure class="article-figure">
-            <img src="<?= esc($article['image_principale']) ?>" 
+            <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" 
                  alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>" 
                  width="1200" 
                  height="675"

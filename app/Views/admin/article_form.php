@@ -1,7 +1,7 @@
 <?= $this->extend('admin/layout') ?>
 
 <?= $this->section('content') ?>
-<form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="wp-editor-form">
+<form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="wp-editor-form" enctype="multipart/form-data">
     <?= csrf_field() ?>
 
     <div class="wp-editor-container">
@@ -69,10 +69,14 @@
                 <h3 class="box-title">Image mise en avant</h3>
                 <div class="box-content">
                     <div class="form-group">
-                        <label for="image_principale">URL de l'image</label>
-                        <input type="text" name="image_principale" id="image_principale" 
-                               value="<?= old('image_principale', $article['image_principale'] ?? '') ?>" 
-                               style="width: 100%; margin-bottom: 10px;" placeholder="https://...">
+                        <?php if (!empty($article['image_principale'])): ?>
+                            <div style="margin-bottom: 10px;">
+                                <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" alt="Aperçu" style="max-width: 100%; height: auto; border: 1px solid #ddd;">
+                            </div>
+                        <?php endif; ?>
+                        
+                        <label for="image_principale">Sélectionner une image</label>
+                        <input type="file" name="image_principale" id="image_principale" accept="image/*" style="width: 100%; margin-bottom: 10px;">
                         
                         <label for="image_alt">Texte alternatif (Alt)</label>
                         <input type="text" name="image_alt" id="image_alt" 

@@ -28,11 +28,18 @@ class AdminController extends BaseController
             'titre'            => $this->request->getPost('titre'),
             'chapeau'          => $this->request->getPost('chapeau'),
             'corps'            => $this->request->getPost('corps'),
-            'image_principale' => $this->request->getPost('image_principale'),
             'image_alt'        => $this->request->getPost('image_alt'),
             'meta_title'       => $this->request->getPost('meta_title'),
             'date_publication' => $this->request->getPost('date_publication') ?: date('Y-m-d H:i:s'),
         ];
+
+        // Gestion de l'upload d'image
+        $img = $this->request->getFile('image_principale');
+        if ($img && $img->isValid() && !$img->hasMoved()) {
+            $newName = $img->getRandomName();
+            $img->move(FCPATH . 'uploads/articles', $newName);
+            $data['image_principale'] = $newName;
+        }
 
         // Génération automatique du slug
         $data['slug'] = $this->generateSlug($data['titre']);
@@ -66,11 +73,18 @@ class AdminController extends BaseController
             'titre'            => $this->request->getPost('titre'),
             'chapeau'          => $this->request->getPost('chapeau'),
             'corps'            => $this->request->getPost('corps'),
-            'image_principale' => $this->request->getPost('image_principale'),
             'image_alt'        => $this->request->getPost('image_alt'),
             'meta_title'       => $this->request->getPost('meta_title'),
             'date_publication' => $this->request->getPost('date_publication'),
         ];
+
+        // Gestion de l'upload d'image
+        $img = $this->request->getFile('image_principale');
+        if ($img && $img->isValid() && !$img->hasMoved()) {
+            $newName = $img->getRandomName();
+            $img->move(FCPATH . 'uploads/articles', $newName);
+            $data['image_principale'] = $newName;
+        }
 
         // On ne regénère le slug que si le titre a changé (optionnel)
         $data['slug'] = $this->generateSlug($data['titre']);

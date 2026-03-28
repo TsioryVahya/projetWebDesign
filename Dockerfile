@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-install intl gd zip mysqli pdo_mysql
 
-# Activer le mod_rewrite pour CI4
-RUN a2enmod rewrite
+# Activer les modules Apache pour la performance
+RUN a2enmod rewrite deflate expires headers
 
 # Configuration d'Apache pour pointer vers /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -24,10 +24,11 @@ RUN echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n\
     Require all granted\n\
 </Directory>" >> /etc/apache2/apache2.conf
 
-# Créer les dossiers nécessaires dans writable et fixer les permissions
+# Créer les dossiers nécessaires dans writable et public/uploads et fixer les permissions
 RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
-    && chown -R www-data:www-data writable \
-    && chmod -R 775 writable
+    && mkdir -p public/uploads/articles \
+    && chown -R www-data:www-data writable public/uploads \
+    && chmod -R 775 writable public/uploads
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
