@@ -43,7 +43,7 @@ abstract class BaseController extends Controller
     protected $data = [
         'title'            => 'Actualités - Le Journal',
         'meta_description' => 'Toute l\'actualité en direct sur votre journal numérique.',
-        'site_name'        => 'Le Journal',
+        'site_name'        => 'La gazette',
     ];
 
     /**

@@ -53,6 +53,9 @@ require FCPATH . '../app/Config/Paths.php';
 
 $paths = new Paths();
 
+// Forcer l'environnement de production pour Lighthouse
+define('ENVIRONMENT', 'production');
+
 // LOAD THE FRAMEWORK BOOTSTRAP FILE
 require $paths->systemDirectory . '/Boot.php';
 
