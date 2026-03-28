@@ -28,6 +28,7 @@ class AdminController extends BaseController
             'titre'            => $this->request->getPost('titre'),
             'chapeau'          => $this->request->getPost('chapeau'),
             'corps'            => $this->request->getPost('corps'),
+            'section'          => $this->request->getPost('section'),
             'image_alt'        => $this->request->getPost('image_alt'),
             'meta_title'       => $this->request->getPost('meta_title'),
             'date_publication' => $this->request->getPost('date_publication') ?: date('Y-m-d H:i:s'),

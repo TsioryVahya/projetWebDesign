@@ -21,6 +21,7 @@ class ArticleModel extends Model
         'image_principale', 
         'image_alt', 
         'slug', 
+        'section',
         'meta_title',
         'date_publication'
     ];

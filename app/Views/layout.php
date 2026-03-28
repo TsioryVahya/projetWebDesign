@@ -41,10 +41,10 @@
         </div>
         <nav>
             <a href="/">Accueil</a>
-            <a href="/international">International</a>
-            <a href="/politique">Politique</a>
-            <a href="/societe">Société</a>
-            <a href="/economie">Économie</a>
+            <a href="/section/international">International</a>
+            <a href="/section/politique">Politique</a>
+            <a href="/section/societe">Société</a>
+            <a href="/section/economie">Économie</a>
         </nav>
     </div>
 </header>

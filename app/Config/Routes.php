@@ -35,6 +35,9 @@ $routes->setAutoRoute(false);
 // Route par défaut (Accueil)
 $routes->get('/', 'Home::index');
 
+// Routes par section
+$routes->get('section/(:segment)', 'Home::section/$1');
+
 // Route complexe format "Le Monde"
 // actualite/{annee}/{mois}/{jour}/{slug}_{id}.html
 $routes->get('actualite/(:num)/(:num)/(:num)/([a-z0-9\-]+)_(:num)\.html', 'ArticleController::view/$1/$2/$3/$4/$5');

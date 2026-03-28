@@ -18,4 +18,21 @@ class Home extends BaseController
         
         return view('welcome_message', $this->data);
     }
+
+    public function section($section_name)
+    {
+        $model = new ArticleModel();
+        
+        // Formater le nom de la section (ex: politique -> Politique)
+        $section_display = ucfirst(strtolower($section_name));
+        
+        $articles = $model->where('section', $section_display)
+                          ->orderBy('date_publication', 'DESC')
+                          ->findAll();
+
+        $this->data['articles'] = $articles;
+        $this->data['title'] = 'Actualités ' . $section_display;
+        
+        return view('welcome_message', $this->data);
+    }
 }

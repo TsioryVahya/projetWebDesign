@@ -27,6 +27,7 @@ CREATE TABLE `articles` (
     `image_principale` VARCHAR(255) DEFAULT NULL,
     `image_alt` VARCHAR(255) DEFAULT NULL,
     `slug` VARCHAR(255) NOT NULL UNIQUE,
+    `section` VARCHAR(50) NOT NULL DEFAULT 'International', -- Accueil, International, Politique, etc.
     `meta_title` VARCHAR(255) DEFAULT NULL, -- SEO Spécifique
     `date_publication` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,

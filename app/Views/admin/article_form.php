@@ -53,6 +53,25 @@
 
             <!-- SEO Box -->
             <div class="wp-card sidebar-box">
+                <h3 class="box-title">Catégorie / Section</h3>
+                <div class="box-content">
+                    <div class="form-group">
+                        <label for="section">Choisir la section</label>
+                        <select name="section" id="section" style="width: 100%; padding: 5px; border: 1px solid #8c8f94; border-radius: 3px;">
+                            <?php 
+                                $sections = ['International', 'Politique', 'Société', 'Économie'];
+                                $current_section = old('section', $article['section'] ?? 'International');
+                                foreach($sections as $s): 
+                            ?>
+                                <option value="<?= $s ?>" <?= $s == $current_section ? 'selected' : '' ?>><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Box -->
+            <div class="wp-card sidebar-box">
                 <h3 class="box-title">Réglages SEO</h3>
                 <div class="box-content">
                     <div class="form-group">
