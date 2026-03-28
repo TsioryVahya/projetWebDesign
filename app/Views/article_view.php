@@ -18,6 +18,7 @@
                  alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>" 
                  width="1200" 
                  height="675"
+                 decoding="async"
                  loading="lazy">
         </figure>
     <?php endif; ?>

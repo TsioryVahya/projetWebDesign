@@ -14,6 +14,7 @@
                         <img src="<?= esc($article['image_principale']) ?>" 
                              alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>"
                              loading="<?= $index < 2 ? 'eager' : 'lazy' ?>"
+                             decoding="async"
                              width="800"
                              height="450">
                     </a>
