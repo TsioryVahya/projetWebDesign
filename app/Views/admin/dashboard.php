@@ -1,39 +1,40 @@
-<?= $this->extend('layout') ?>
+<?= $this->extend('admin/layout') ?>
 
 <?= $this->section('content') ?>
-<div class="admin-dashboard">
-    <div class="dashboard-header">
-        <h1>Dashboard - Journaliste</h1>
-        <div class="actions">
-            <a href="/articles/create" class="btn btn-primary">Publier un nouvel article</a>
-            <a href="/logout" class="btn btn-secondary">Déconnexion</a>
-        </div>
-    </div>
+<div class="wp-header-actions" style="margin-bottom: 20px;">
+    <a href="/articles/create" class="wp-button wp-button-primary" style="margin-right: 10px;">Ajouter nouveau</a>
+</div>
 
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
-    <?php endif; ?>
-
-    <table class="admin-table">
+<div class="wp-card" style="padding: 0; overflow: hidden;">
+    <table class="wp-table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Titre</th>
-                <th>Slug</th>
-                <th>Date Pub.</th>
-                <th>Actions</th>
+                <th class="column-title">Titre</th>
+                <th class="column-author">Auteur</th>
+                <th class="column-date">Date</th>
+                <th class="column-actions">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($articles as $article): ?>
                 <tr>
-                    <td><?= esc($article['id']) ?></td>
-                    <td><?= esc($article['titre']) ?></td>
-                    <td><code><?= esc($article['slug']) ?></code></td>
-                    <td><?= date('d/m/Y H:i', strtotime($article['date_publication'])) ?></td>
+                    <td class="column-title">
+                        <strong><a href="/articles/edit/<?= $article['id'] ?>"><?= esc($article['titre']) ?></a></strong>
+                        <div class="row-actions">
+                            <span class="edit"><a href="/articles/edit/<?= $article['id'] ?>">Modifier</a> | </span>
+                            <span class="trash"><a href="/articles/delete/<?= $article['id'] ?>" class="submitdelete" onclick="return confirm('Voulez-vous vraiment supprimer cet article ?')">Corbeille</a> | </span>
+                            <span class="view"><a href="/actualite/<?= date('Y/m/d/', strtotime($article['date_publication'])) . $article['slug'] . '_' . $article['id'] . '.html' ?>" target="_blank">Afficher</a></span>
+                        </div>
+                    </td>
+                    <td class="column-author">Admin</td>
+                    <td class="column-date">
+                        Publié<br>
+                        <?= date('d/m/Y', strtotime($article['date_publication'])) ?> à <?= date('H:i', strtotime($article['date_publication'])) ?>
+                    </td>
                     <td>
-                        <a href="/articles/edit/<?= $article['id'] ?>" class="btn-sm btn-edit">Modifier</a>
-                        <a href="/articles/delete/<?= $article['id'] ?>" class="btn-sm btn-delete" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                        <div style="display: flex; gap: 5px;">
+                             <a href="/articles/edit/<?= $article['id'] ?>" class="wp-button">Éditer</a>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -42,22 +43,63 @@
 </div>
 
 <style>
-    .admin-dashboard { padding: 20px 0; }
-    .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-    
-    .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .admin-table th, .admin-table td { border: 1px solid var(--border-color); padding: 12px; text-align: left; }
-    .admin-table th { background: #f4f4f4; font-family: var(--font-serif); }
-    .admin-table tr:hover { background: #f9f9f9; }
+    .wp-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+    }
 
-    .btn { padding: 10px 20px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; display: inline-block; }
-    .btn-primary { background: #000; color: #fff; }
-    .btn-secondary { background: #666; color: #fff; margin-left: 10px; }
-    
-    .btn-sm { padding: 5px 10px; text-decoration: none; font-size: 0.8rem; border-radius: 3px; }
-    .btn-edit { background: #28a745; color: #fff; }
-    .btn-delete { background: #dc3545; color: #fff; margin-left: 5px; }
-    
-    .alert-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; margin-bottom: 20px; }
+    .wp-table th {
+        text-align: left;
+        padding: 10px 15px;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 1px solid #c3c4c7;
+        background: #f6f7f7;
+    }
+
+    .wp-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f1;
+        font-size: 13px;
+        vertical-align: top;
+    }
+
+    .wp-table tr:hover {
+        background: #f6f7f7;
+    }
+
+    .column-title strong a {
+        color: #2271b1;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .row-actions {
+        visibility: hidden;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .wp-table tr:hover .row-actions {
+        visibility: visible;
+    }
+
+    .row-actions a {
+        text-decoration: none;
+        color: #2271b1;
+    }
+
+    .row-actions .submitdelete {
+        color: #b32d2e;
+    }
+
+    .column-date {
+        color: #50575e;
+    }
+
+    .column-author {
+        color: #2271b1;
+    }
 </style>
 <?= $this->endSection() ?>

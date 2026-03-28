@@ -1,87 +1,168 @@
-<?= $this->extend('layout') ?>
+<?= $this->extend('admin/layout') ?>
 
 <?= $this->section('content') ?>
-<div class="admin-form-container">
-    <div class="form-header">
-        <h1><?= esc($title) ?></h1>
-        <a href="/admin/dashboard" class="btn btn-secondary">Retour au Dashboard</a>
+<form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="wp-editor-form">
+    <?= csrf_field() ?>
+
+    <div class="wp-editor-container">
+        <!-- Main Column: Title and Content -->
+        <div class="wp-editor-main">
+            <div class="wp-title-wrapper">
+                <input type="text" name="titre" id="titre" class="wp-title-input" 
+                       value="<?= old('titre', $article['titre'] ?? '') ?>" 
+                       required placeholder="Saisir le titre ici">
+            </div>
+
+            <div class="wp-card" style="margin-bottom: 20px;">
+                <label for="chapeau" style="display: block; font-weight: 600; margin-bottom: 10px;">Extrait (Chapeau)</label>
+                <textarea name="chapeau" id="chapeau" rows="3" required 
+                          style="width: 100%; border: 1px solid #c3c4c7; padding: 10px; box-sizing: border-box;"><?= old('chapeau', $article['chapeau'] ?? '') ?></textarea>
+            </div>
+
+            <div class="wp-card">
+                <label for="corps" style="display: block; font-weight: 600; margin-bottom: 10px;">Contenu de l'article</label>
+                <textarea name="corps" id="corps" rows="20" required 
+                          style="width: 100%; border: 1px solid #c3c4c7; padding: 10px; box-sizing: border-box; font-family: monospace;"><?= old('corps', $article['corps'] ?? '') ?></textarea>
+            </div>
+        </div>
+
+        <!-- Sidebar Column: Publish settings, Image, SEO -->
+        <div class="wp-editor-sidebar">
+            <!-- Publish Box -->
+            <div class="wp-card sidebar-box">
+                <h3 class="box-title">Publier</h3>
+                <div class="box-content">
+                    <p><strong>État :</strong> <?= isset($article) ? 'Publié' : 'Brouillon' ?></p>
+                    <p><strong>Visibilité :</strong> Publique</p>
+                    <div class="form-group">
+                        <label for="date_publication">Publier le :</label>
+                        <input type="datetime-local" name="date_publication" id="date_publication" 
+                               value="<?= old('date_publication', isset($article) ? date('Y-m-d\TH:i', strtotime($article['date_publication'])) : date('Y-m-d\TH:i')) ?>"
+                               style="width: 100%; margin-top: 5px;">
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <?php if (isset($article)): ?>
+                        <a href="/articles/delete/<?= $article['id'] ?>" class="submitdelete" onclick="return confirm('Mettre à la corbeille ?')">Déplacer dans la corbeille</a>
+                    <?php endif; ?>
+                    <button type="submit" class="wp-button wp-button-primary">
+                        <?= isset($article) ? 'Mettre à jour' : 'Publier' ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEO Box -->
+            <div class="wp-card sidebar-box">
+                <h3 class="box-title">Réglages SEO</h3>
+                <div class="box-content">
+                    <div class="form-group">
+                        <label for="meta_title">Titre SEO</label>
+                        <input type="text" name="meta_title" id="meta_title" 
+                               value="<?= old('meta_title', $article['meta_title'] ?? '') ?>" 
+                               style="width: 100%;" placeholder="Titre dans Google">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Box -->
+            <div class="wp-card sidebar-box">
+                <h3 class="box-title">Image mise en avant</h3>
+                <div class="box-content">
+                    <div class="form-group">
+                        <label for="image_principale">URL de l'image</label>
+                        <input type="text" name="image_principale" id="image_principale" 
+                               value="<?= old('image_principale', $article['image_principale'] ?? '') ?>" 
+                               style="width: 100%; margin-bottom: 10px;" placeholder="https://...">
+                        
+                        <label for="image_alt">Texte alternatif (Alt)</label>
+                        <input type="text" name="image_alt" id="image_alt" 
+                               value="<?= old('image_alt', $article['image_alt'] ?? '') ?>" 
+                               style="width: 100%;" placeholder="Description pour SEO">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <?php if (session()->getFlashdata('errors')): ?>
-        <div class="alert alert-danger">
-            <ul>
-                <?php foreach (session()->getFlashdata('errors') as $error): ?>
-                    <li><?= esc($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-
-    <form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="admin-form">
-        <?= csrf_field() ?>
-
-        <div class="form-group">
-            <label for="titre">Titre (H1)</label>
-            <input type="text" name="titre" id="titre" value="<?= old('titre', $article['titre'] ?? '') ?>" required placeholder="Le titre de l'article">
-        </div>
-
-        <div class="form-group">
-            <label for="chapeau">Chapeau (Introduction en gras / Meta Description)</label>
-            <textarea name="chapeau" id="chapeau" rows="4" required placeholder="L'introduction résumée de l'article"><?= old('chapeau', $article['chapeau'] ?? '') ?></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="corps">Corps de l'article (Contenu riche - HTML simple accepté)</label>
-            <textarea name="corps" id="corps" rows="12" required placeholder="Le corps de l'article avec balises H2, H3 intégrées"><?= old('corps', $article['corps'] ?? '') ?></textarea>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="image_principale">URL de l'image principale</label>
-                <input type="text" name="image_principale" id="image_principale" value="<?= old('image_principale', $article['image_principale'] ?? '') ?>" placeholder="https://example.com/image.jpg">
-            </div>
-            <div class="form-group">
-                <label for="image_alt">Texte alternatif (SEO Alt)</label>
-                <input type="text" name="image_alt" id="image_alt" value="<?= old('image_alt', $article['image_alt'] ?? '') ?>" placeholder="Description de l'image">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="meta_title">Titre SEO (Meta Title)</label>
-                <input type="text" name="meta_title" id="meta_title" value="<?= old('meta_title', $article['meta_title'] ?? '') ?>" placeholder="Titre SEO spécifique">
-            </div>
-            <div class="form-group">
-                <label for="date_publication">Date de publication</label>
-                <input type="datetime-local" name="date_publication" id="date_publication" value="<?= old('date_publication', isset($article) ? date('Y-m-d\TH:i', strtotime($article['date_publication'])) : '') ?>">
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary"><?= isset($article) ? 'Mettre à jour' : 'Publier l\'article' ?></button>
-    </form>
-</div>
+</form>
 
 <style>
-    .admin-form-container { max-width: 900px; margin: 30px auto; padding: 30px; border: 1px solid var(--border-color); background: #fff; }
-    .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-    
-    .admin-form .form-group { margin-bottom: 25px; }
-    .admin-form label { display: block; font-weight: 700; margin-bottom: 8px; font-family: var(--font-serif); }
-    .admin-form input[type="text"], 
-    .admin-form input[type="datetime-local"], 
-    .admin-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
-    
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+    .wp-editor-container {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 20px;
+    }
 
-    .btn { padding: 12px 25px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; display: inline-block; font-size: 1rem; }
-    .btn-primary { background: #000; color: #fff; }
-    .btn-secondary { background: #666; color: #fff; }
-    
-    .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 15px; margin-bottom: 25px; }
-    .alert-danger ul { margin: 0; padding-left: 20px; }
+    .wp-title-wrapper {
+        margin-bottom: 20px;
+    }
 
-    @media (max-width: 768px) {
-        .form-row { grid-template-columns: 1fr; }
+    .wp-title-input {
+        width: 100%;
+        padding: 10px 15px;
+        font-size: 1.7rem;
+        font-weight: 600;
+        border: 1px solid #c3c4c7;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,.07);
+        box-sizing: border-box;
+    }
+
+    .sidebar-box {
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .box-title {
+        margin: 0;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: 600;
+        border-bottom: 1px solid #c3c4c7;
+        background: #fff;
+    }
+
+    .box-content {
+        padding: 15px;
+        font-size: 13px;
+    }
+
+    .box-content p {
+        margin: 0 0 10px 0;
+    }
+
+    .box-footer {
+        padding: 10px 15px;
+        background: #f6f7f7;
+        border-top: 1px solid #c3c4c7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .submitdelete {
+        color: #b32d2e;
+        text-decoration: underline;
+        font-size: 13px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    input[type="text"], input[type="datetime-local"], textarea {
+        border: 1px solid #8c8f94;
+        border-radius: 3px;
+        padding: 5px;
+    }
+
+    @media (max-width: 1100px) {
+        .wp-editor-container {
+            grid-template-columns: 1fr;
+        }
+        .wp-editor-sidebar {
+            order: 2;
+        }
     }
 </style>
 <?= $this->endSection() ?>
