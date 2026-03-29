@@ -34,12 +34,18 @@ class AdminController extends BaseController
             'date_publication' => $this->request->getPost('date_publication') ?: date('Y-m-d H:i:s'),
         ];
 
-        // Gestion de l'upload d'image
-        $img = $this->request->getFile('image_principale');
-        if ($img && $img->isValid() && !$img->hasMoved()) {
-            $newName = $img->getRandomName();
-            $img->move(FCPATH . 'uploads/articles', $newName);
-            $data['image_principale'] = $newName;
+        // Extraction automatique depuis la 1ère image TinyMCE
+        $data['image_principale'] = $this->extractFirstImageFromContent($data['corps']);
+        if (empty($data['image_alt'])) {
+            $data['image_alt'] = $this->extractFirstImageAltFromContent($data['corps']);
+        }
+
+        // Gestion automatique des champs SEO si vides
+        if (empty($data['meta_title'])) {
+            $data['meta_title'] = $data['titre'];
+        }
+        if (empty($data['image_alt'])) {
+            $data['image_alt'] = $data['titre'];
         }
 
         // Génération automatique du slug
@@ -79,12 +85,10 @@ class AdminController extends BaseController
             'date_publication' => $this->request->getPost('date_publication'),
         ];
 
-        // Gestion de l'upload d'image
-        $img = $this->request->getFile('image_principale');
-        if ($img && $img->isValid() && !$img->hasMoved()) {
-            $newName = $img->getRandomName();
-            $img->move(FCPATH . 'uploads/articles', $newName);
-            $data['image_principale'] = $newName;
+        // Extraction automatique depuis la 1ère image TinyMCE
+        $data['image_principale'] = $this->extractFirstImageFromContent($data['corps']);
+        if (empty($data['image_alt'])) {
+            $data['image_alt'] = $this->extractFirstImageAltFromContent($data['corps']);
         }
 
         // On ne regénère le slug que si le titre a changé (optionnel)
@@ -102,6 +106,33 @@ class AdminController extends BaseController
         $model = new ArticleModel();
         $model->delete($id);
         return redirect()->to('/admin/dashboard')->with('success', 'Article supprimé.');
+    }
+
+    /**
+     * Extrait la première image insérée dans le contenu TinyMCE
+     * et retourne uniquement le nom du fichier (ex: 1774787766_abc.jpeg)
+     */
+    private function extractFirstImageFromContent(string $content): string
+    {
+        // On cherche la première balise <img> avec un src pointant vers /uploads/articles/
+        if (preg_match('/<img[^>]+src=["\']([^"\']*\/uploads\/articles\/([^"\'?]+))["\'][^>]*>/i', $content, $matches)) {
+            return $matches[2]; // Retourne uniquement le nom du fichier
+        }
+        return ''; // Aucune image trouvée
+    }
+
+    /**
+     * Extrait le texte alt de la première image du contenu TinyMCE
+     */
+    private function extractFirstImageAltFromContent(string $content): string
+    {
+        if (preg_match('/<img[^>]+src=["\'][^"\']*\/uploads\/articles\/[^"\'?]+["\'][^>]*>/i', $content, $imgTag)) {
+            // Cherche l'attribut alt dans la balise img trouvée
+            if (preg_match('/alt=["\']([^"\']*)["\']/', $imgTag[0], $altMatch)) {
+                return html_entity_decode(trim($altMatch[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+        }
+        return '';
     }
 
     /**

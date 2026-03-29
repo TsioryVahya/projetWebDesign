@@ -1,73 +1,186 @@
 <?= $this->extend('layout') ?>
 
 <?= $this->section('content') ?>
-<div class="home-grid">
-    <?php if (!empty($articles)): ?>
+
+<?php if (!empty($articles)): ?>
+    <div class="article-list">
         <?php foreach ($articles as $index => $article): ?>
-            <?php 
-                $article_url = '/actualite/' . date('Y/m/d/', strtotime($article['date_publication'])) . $article['slug'] . '_' . $article['id'] . '.html';
-                $is_main = ($index === 0);
+            <?php
+                $url = '/actualite/' . date('Y/m/d/', strtotime($article['date_publication'])) . $article['slug'] . '_' . $article['id'] . '.html';
+
+                // Priorité au chapeau ; sinon on extrait depuis le corps
+                $chapeau_brut = strip_tags($article['chapeau'] ?? '');
+                $chapeau_brut = html_entity_decode($chapeau_brut, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $chapeau_brut = preg_replace('/[\s\x{00A0}]+/u', ' ', $chapeau_brut);
+                $chapeau_brut = trim($chapeau_brut);
+
+                if (!empty($chapeau_brut)) {
+                    // On a un chapeau → on l'utilise, tronqué à 220 chars
+                    $extrait = $chapeau_brut;
+                } else {
+                    // Pas de chapeau → on extrait depuis le corps
+                    $extrait = strip_tags($article['corps'] ?? '');
+                    $extrait = html_entity_decode($extrait, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    $extrait = preg_replace('/[\s\x{00A0}]+/u', ' ', $extrait);
+                    $extrait = trim($extrait);
+                }
+
+                if (mb_strlen($extrait) > 220) {
+                    $extrait = mb_substr($extrait, 0, 220);
+                    $extrait = mb_substr($extrait, 0, mb_strrpos($extrait, ' ')) . '…';
+                }
             ?>
-            <article class="article-card <?= $is_main ? 'main-article' : '' ?>">
+            <article class="list-card">
+                <div class="list-card-body">
+                    <?php if (!empty($article['section'])): ?>
+                        <span class="card-section"><?= esc(strtoupper($article['section'])) ?></span>
+                    <?php endif; ?>
+
+                    <h2 class="card-title">
+                        <a href="<?= esc($url) ?>"><?= esc($article['titre']) ?></a>
+                    </h2>
+
+                    <?php if (!empty($extrait)): ?>
+                        <p class="card-extract"><?= esc($extrait) ?></p>
+                    <?php endif; ?>
+
+                    <time class="card-date" datetime="<?= esc($article['date_publication']) ?>">
+                        Publié le <?= date('d/m/Y à H\hi', strtotime($article['date_publication'])) ?>
+                    </time>
+                </div>
+
                 <?php if (!empty($article['image_principale'])): ?>
-                    <a href="<?= esc($article_url) ?>">
-                        <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" 
-                             alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>"
+                    <a href="<?= esc($url) ?>" class="card-img-link">
+                        <img src="/uploads/articles/<?= esc($article['image_principale']) ?>"
+                             alt="<?= esc(!empty($article['image_alt']) ? $article['image_alt'] : $article['titre']) ?>"
+                             width="420" height="220"
                              loading="<?= $index < 2 ? 'eager' : 'lazy' ?>"
-                             decoding="async"
-                             width="800"
-                             height="450">
+                             decoding="async">
                     </a>
                 <?php endif; ?>
-                
-                <div class="article-content">
-                    <h2><a href="<?= esc($article_url) ?>"><?= esc($article['titre']) ?></a></h2>
-                    <p class="article-chapeau"><?= esc($article['chapeau']) ?></p>
-                    <time datetime="<?= esc($article['date_publication']) ?>"><?= date('d/m/Y', strtotime($article['date_publication'])) ?></time>
-                </div>
             </article>
         <?php endforeach; ?>
-    <?php else: ?>
-        <p>Aucun article disponible pour le moment.</p>
-    <?php endif; ?>
-</div>
+    </div>
+
+<?php else: ?>
+    <p class="no-articles">Aucun article disponible pour le moment.</p>
+<?php endif; ?>
 
 <style>
-    .home-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        margin-top: 20px;
+    /* ── LISTE ──────────────────────────────────────── */
+    .article-list {
+        margin-top: 10px;
     }
 
-    .main-article {
-        grid-column: span 3;
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 40px;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 40px;
-        margin-bottom: 20px;
+    /* ── CARTE ARTICLE ──────────────────────────────── */
+    .list-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .main-article h2 { font-size: 2.5rem; line-height: 1.1; }
-
-    .article-card h2 { margin: 10px 0; font-size: 1.4rem; }
-    .article-card h2 a { color: inherit; text-decoration: none; }
-    .article-card h2 a:hover { text-decoration: underline; }
-
-    .article-chapeau { color: #555; font-size: 0.95rem; margin-bottom: 10px; }
-    
-    time { font-size: 0.8rem; color: var(--secondary-color); font-weight: bold; }
-
-    @media (max-width: 992px) {
-        .home-grid { grid-template-columns: repeat(2, 1fr); }
-        .main-article { grid-column: span 2; grid-template-columns: 1fr; }
+    .list-card:first-child {
+        border-top: 1px solid var(--border-color);
     }
 
+    /* ── CORPS TEXTE ────────────────────────────────── */
+    .list-card-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* ── BADGE SECTION ──────────────────────────────── */
+    .card-section {
+        display: inline-block;
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: .12em;
+        color: #c00;
+        border-left: 3px solid #c00;
+        padding-left: 6px;
+        margin-bottom: 6px;
+        line-height: 1;
+    }
+
+    /* ── TITRE ──────────────────────────────────────── */
+    .card-title {
+        font-family: var(--font-serif);
+        font-size: 1.15rem;
+        font-weight: 800;
+        line-height: 1.25;
+        margin: 0 0 7px;
+    }
+
+    .card-title a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-underline-offset: 3px;
+        transition: text-decoration-color .2s;
+    }
+
+    .card-title a:hover {
+        text-decoration-color: currentColor;
+    }
+
+    /* ── EXTRAIT DU CORPS ───────────────────────────── */
+    .card-extract {
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        color: #444;
+        line-height: 1.55;
+        margin: 0 0 8px;
+    }
+
+    /* ── DATE ───────────────────────────────────────── */
+    .card-date {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+
+    /* ── IMAGE MINIATURE ────────────────────────────── */
+    .card-img-link {
+        flex-shrink: 0;
+        display: block;
+        overflow: hidden;
+    }
+
+    .card-img-link img {
+        width: 420px;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        transition: transform .3s ease;
+    }
+
+    .card-img-link:hover img {
+        transform: scale(1.03);
+    }
+
+    /* ── VIDE ───────────────────────────────────────── */
+    .no-articles {
+        color: #666;
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 600px) {
-        .home-grid { grid-template-columns: 1fr; }
-        .main-article { grid-column: span 1; }
+        .list-card {
+            flex-direction: column-reverse;
+        }
+
+        .card-img-link img {
+            width: 100%;
+            height: 220px;
+        }
     }
 </style>
+
 <?= $this->endSection() ?>

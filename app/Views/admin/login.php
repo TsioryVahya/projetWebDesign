@@ -12,11 +12,11 @@
         <?= csrf_field() ?>
         <div class="form-group">
             <label for="username">Utilisateur</label>
-            <input type="text" name="username" id="username" required placeholder="admin">
+            <input type="text" name="username" id="username" value="admin" 	required placeholder="admin">
         </div>
         <div class="form-group">
             <label for="password">Mot de passe</label>
-            <input type="password" name="password" id="password" required placeholder="admin123">
+            <input type="password" name="password" id="password" value="admin123" required placeholder="admin123">
         </div>
         <button type="submit">Se connecter</button>
     </form>

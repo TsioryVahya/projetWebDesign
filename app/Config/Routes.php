@@ -57,4 +57,5 @@ $routes->group('articles', ['filter' => 'auth'], function($routes) {
     $routes->get('edit/(:num)', 'AdminController::edit/$1');
     $routes->post('update/(:num)', 'AdminController::update/$1');
     $routes->get('delete/(:num)', 'AdminController::delete/$1');
+    $routes->post('upload', 'ImageUploadController::upload'); // Route pour TinyMCE
 });

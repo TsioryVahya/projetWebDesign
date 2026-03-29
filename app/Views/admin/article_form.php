@@ -1,7 +1,7 @@
 <?= $this->extend('admin/layout') ?>
 
 <?= $this->section('content') ?>
-<form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="wp-editor-form" enctype="multipart/form-data">
+<form action="<?= isset($article) ? '/articles/update/' . $article['id'] : '/articles/store' ?>" method="post" class="wp-editor-form">
     <?= csrf_field() ?>
 
     <div class="wp-editor-container">
@@ -15,13 +15,13 @@
 
             <div class="wp-card" style="margin-bottom: 20px;">
                 <label for="chapeau" style="display: block; font-weight: 600; margin-bottom: 10px;">Extrait (Chapeau)</label>
-                <textarea name="chapeau" id="chapeau" rows="3" required 
+                <textarea name="chapeau" id="chapeau" rows="3" 
                           style="width: 100%; border: 1px solid #c3c4c7; padding: 10px; box-sizing: border-box;"><?= old('chapeau', $article['chapeau'] ?? '') ?></textarea>
             </div>
 
             <div class="wp-card">
                 <label for="corps" style="display: block; font-weight: 600; margin-bottom: 10px;">Contenu de l'article</label>
-                <textarea name="corps" id="corps" rows="20" required 
+                <textarea name="corps" id="corps" rows="20" 
                           style="width: 100%; border: 1px solid #c3c4c7; padding: 10px; box-sizing: border-box; font-family: monospace;"><?= old('corps', $article['corps'] ?? '') ?></textarea>
             </div>
         </div>
@@ -70,8 +70,8 @@
                 </div>
             </div>
 
-            <!-- SEO Box -->
-            <div class="wp-card sidebar-box">
+            <!-- SEO Box (Géré automatiquement) -->
+            <div class="wp-card sidebar-box" style="display: none;">
                 <h3 class="box-title">Réglages SEO</h3>
                 <div class="box-content">
                     <div class="form-group">
@@ -83,27 +83,6 @@
                 </div>
             </div>
 
-            <!-- Image Box -->
-            <div class="wp-card sidebar-box">
-                <h3 class="box-title">Image mise en avant</h3>
-                <div class="box-content">
-                    <div class="form-group">
-                        <?php if (!empty($article['image_principale'])): ?>
-                            <div style="margin-bottom: 10px;">
-                                <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" alt="Aperçu" style="max-width: 100%; height: auto; border: 1px solid #ddd;">
-                            </div>
-                        <?php endif; ?>
-                        
-                        <label for="image_principale">Sélectionner une image</label>
-                        <input type="file" name="image_principale" id="image_principale" accept="image/*" style="width: 100%; margin-bottom: 10px;">
-                        
-                        <label for="image_alt">Texte alternatif (Alt)</label>
-                        <input type="text" name="image_alt" id="image_alt" 
-                               value="<?= old('image_alt', $article['image_alt'] ?? '') ?>" 
-                               style="width: 100%;" placeholder="Description pour SEO">
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </form>
@@ -188,4 +167,28 @@
         }
     }
 </style>
+
+<script>
+    tinymce.init({
+        selector: '#corps',
+        height: 400,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        images_upload_url: '/articles/upload',
+        automatic_uploads: true,
+        convert_urls: false,
+        relative_urls: false,
+        remove_script_host: false,
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+        branding: false,
+        promotion: false,
+    });
+</script>
 <?= $this->endSection() ?>

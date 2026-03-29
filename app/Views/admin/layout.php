@@ -7,6 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/sxyjev2bs1aa2f9bg0b00yfxr3l8b908so3ejezh14m8dfzt/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+
     <style>
         :root {
             --wp-bg: #f0f0f1;
@@ -154,15 +158,9 @@
 
 <div class="wp-sidebar">
     <div class="wp-sidebar-header">
-        <a href="/">Le Journal</a>
+        <a href="/">La Gazette</a>
     </div>
     <ul class="wp-menu">
-        <li class="wp-menu-item <?= current_url() == base_url('admin/dashboard') ? 'active' : '' ?>">
-            <a href="/admin/dashboard">
-                <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                <span>Tableau de bord</span>
-            </a>
-        </li>
         <li class="wp-menu-item <?= strpos(current_url(), 'articles') !== false ? 'active' : '' ?>">
             <a href="/admin/dashboard">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>

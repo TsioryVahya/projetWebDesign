@@ -4,24 +4,14 @@
 <article class="article-detail">
     <header class="article-header">
         <h1><?= esc($article['titre']) ?></h1>
-        <p class="article-chapeau">
-            <strong><?= esc($article['chapeau']) ?></strong>
-        </p>
+        <div class="article-chapeau">
+            <?= $article['chapeau'] ?>
+        </div>
         <div class="article-meta">
             Publié le <time datetime="<?= esc($article['date_publication']) ?>"><?= date('d/m/Y', strtotime($article['date_publication'])) ?></time>
         </div>
     </header>
 
-    <?php if (!empty($article['image_principale'])): ?>
-        <figure class="article-figure">
-            <img src="/uploads/articles/<?= esc($article['image_principale']) ?>" 
-                 alt="<?= esc($article['image_alt'] ?? 'Image de l\'article') ?>" 
-                 width="1200" 
-                 height="675"
-                 decoding="async"
-                 loading="lazy">
-        </figure>
-    <?php endif; ?>
 
     <div class="article-body">
         <?= $article['corps'] // Contenu riche (H2, H3 intégrés) ?>
@@ -50,6 +40,11 @@
         color: #333;
         margin-bottom: 20px;
         line-height: 1.4;
+        font-weight: 700;
+    }
+
+    .article-chapeau p {
+        margin: 0;
     }
 
     .article-meta {
