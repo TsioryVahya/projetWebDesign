@@ -36,11 +36,13 @@
     }
 
     .article-chapeau {
-        font-size: 1.25rem;
+        font-family: var(--font-serif);
+        font-size: 1.45rem;
         color: #333;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         line-height: 1.4;
         font-weight: 700;
+        font-style: italic; /* Style typique des chapeaux Le Monde */
     }
 
     .article-chapeau p {

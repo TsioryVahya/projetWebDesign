@@ -33,6 +33,13 @@ RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copier et préparer le script d'entrée
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR /var/www/html
 
 EXPOSE 80
+
+# Définir le script d'entrée personnalisé
+ENTRYPOINT ["/entrypoint.sh"]

@@ -91,16 +91,17 @@
         min-width: 0;
     }
 
-    /* ── BADGE SECTION ──────────────────────────────── */
+    /* ── SECTION BADGE (Rouge) ───────────────────────── */
     .card-section {
         display: inline-block;
         font-family: var(--font-sans);
         font-size: 0.68rem;
         font-weight: 800;
         letter-spacing: .12em;
-        color: #c00;
-        border-left: 3px solid #c00;
-        padding-left: 6px;
+        text-transform: uppercase;
+        color: #fff;
+        background: #c00;
+        padding: 2px 7px;
         margin-bottom: 6px;
         line-height: 1;
     }
@@ -108,10 +109,10 @@
     /* ── TITRE ──────────────────────────────────────── */
     .card-title {
         font-family: var(--font-serif);
-        font-size: 1.15rem;
+        font-size: 1.25rem;
         font-weight: 800;
         line-height: 1.25;
-        margin: 0 0 7px;
+        margin: 0 0 8px;
     }
 
     .card-title a {
@@ -126,12 +127,12 @@
         text-decoration-color: currentColor;
     }
 
-    /* ── EXTRAIT DU CORPS ───────────────────────────── */
+    /* ── EXTRAIT ───────────────────────────── */
     .card-extract {
-        font-family: var(--font-sans);
-        font-size: 0.88rem;
-        color: #444;
-        line-height: 1.55;
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        color: #333;
+        line-height: 1.5;
         margin: 0 0 8px;
     }
 
@@ -139,7 +140,7 @@
     .card-date {
         display: block;
         font-family: var(--font-sans);
-        font-size: 0.72rem;
+        font-size: 0.75rem;
         color: var(--secondary-color);
         font-weight: 600;
     }
@@ -148,7 +149,6 @@
     .card-img-link {
         flex-shrink: 0;
         display: block;
-        overflow: hidden;
     }
 
     .card-img-link img {
@@ -163,14 +163,14 @@
         transform: scale(1.03);
     }
 
-    /* ── VIDE ───────────────────────────────────────── */
-    .no-articles {
-        color: #666;
-        margin-top: 40px;
-        text-align: center;
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 900px) {
+        .card-img-link img {
+            width: 300px;
+            height: 160px;
+        }
     }
 
-    /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 600px) {
         .list-card {
             flex-direction: column-reverse;
