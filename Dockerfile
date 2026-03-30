@@ -28,7 +28,7 @@ RUN echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n\
 RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
     && mkdir -p public/uploads/articles \
     && chown -R www-data:www-data writable public/uploads \
-    && chmod -R 775 writable public/uploads
+    && chmod -R 777 writable public/uploads
 
 # Installer et copier Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
