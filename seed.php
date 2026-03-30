@@ -55,11 +55,20 @@ $check = $pdo->query("SELECT COUNT(*) FROM articles")->fetchColumn();
 
 if ($check == 0) {
     echo "Base vide détectée. Insertion des articles de test...\n";
-    $sql = "INSERT INTO articles (titre, chapeau, corps, image_principale, image_alt, slug, section, date_publication) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $typesRows = $pdo->query("SELECT id, nom FROM types")->fetchAll();
+    $typeMap = [];
+    foreach ($typesRows as $type) {
+        $typeMap[$type['nom']] = (int)$type['id'];
+    }
+
+    $defaultTypeId = !empty($typesRows) ? (int)$typesRows[0]['id'] : 1;
+
+    $sql = "INSERT INTO articles (titre, chapeau, corps, image_principale, image_alt, slug, section_type_id, date_publication) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $a) {
-        $stmt->execute([$a['titre'], $a['chapeau'], $a['corps'], $a['image_principale'], $a['image_alt'], $a['slug'], $a['section'], $a['date_publication']]);
+        $sectionTypeId = $typeMap[$a['section']] ?? $defaultTypeId;
+        $stmt->execute([$a['titre'], $a['chapeau'], $a['corps'], $a['image_principale'], $a['image_alt'], $a['slug'], $sectionTypeId, $a['date_publication']]);
     }
     echo "Succès : Tout a été peuplé ! ✨\n";
 } else {

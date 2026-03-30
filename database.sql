@@ -18,8 +18,6 @@ INSERT INTO `types` (`nom`) VALUES
 ('Société'),
 ('Économie');
 
-INSERT INTO `types` (`nom`) VALUES
-('test');
 
 -- Table des utilisateurs (BackOffice)
 CREATE TABLE `users` (
@@ -44,13 +42,15 @@ CREATE TABLE `articles` (
     `image_principale` VARCHAR(255) DEFAULT NULL,
     `image_alt` VARCHAR(255) DEFAULT NULL,
     `slug` VARCHAR(255) NOT NULL UNIQUE,
-    `section` VARCHAR(50) NOT NULL DEFAULT 'International', -- Accueil, International, Politique, etc.
+    `section_type_id` INT NOT NULL,
     `meta_title` VARCHAR(255) DEFAULT NULL, -- SEO Spécifique
     `date_publication` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_articles_type` FOREIGN KEY (`section_type_id`) REFERENCES `types`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Indexation pour recherche et SEO
 CREATE INDEX idx_slug ON articles(slug);
 CREATE INDEX idx_date_pub ON articles(date_publication);
+CREATE INDEX idx_section_type_id ON articles(section_type_id);

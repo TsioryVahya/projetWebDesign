@@ -5,7 +5,7 @@
 require_once '../config.php';
 require_once 'auth_check.php';
 
-$query = $pdo->query("SELECT * FROM articles ORDER BY created_at DESC");
+$query = $pdo->query("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id ORDER BY a.created_at DESC");
 $articles = $query->fetchAll();
 
 $title = "Dashboard - PHP Vanilla";
@@ -88,7 +88,7 @@ $title = "Dashboard - PHP Vanilla";
                             <a href="delete.php?id=<?= $article['id'] ?>" class="delete" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
                         </div>
                     </td>
-                    <td><span class="badge-section"><?= htmlspecialchars($article['section']) ?></span></td>
+                    <td><span class="badge-section"><?= htmlspecialchars($article['section_nom']) ?></span></td>
                     <td>
                         <?= date('d/m/Y', strtotime($article['date_publication'])) ?><br>
                         <span style="color:#646970; font-size:11px;">Publié</span>

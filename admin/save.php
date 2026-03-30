@@ -14,21 +14,19 @@ $id = (int)$_POST['id'];
 $titre = trim($_POST['titre']);
 $chapeau = trim($_POST['chapeau']);
 $corps = $_POST['corps'];
-$section = trim($_POST['section']);
+$sectionTypeId = isset($_POST['section_type_id']) ? (int)$_POST['section_type_id'] : 0;
 $date_publication = !empty($_POST['date_publication']) ? date('Y-m-d H:i:s', strtotime($_POST['date_publication'])) : date('Y-m-d H:i:s');
 
-// Sécurise la section: elle doit exister dans la table des types
+// Sécurise le type: il doit exister dans la table types
 try {
-    $typeStmt = $pdo->prepare("SELECT COUNT(*) FROM types WHERE nom = ?");
-    $typeStmt->execute([$section]);
+    $typeStmt = $pdo->prepare("SELECT COUNT(*) FROM types WHERE id = ?");
+    $typeStmt->execute([$sectionTypeId]);
     if ((int)$typeStmt->fetchColumn() === 0) {
-        $fallbackStmt = $pdo->query("SELECT nom FROM types ORDER BY id ASC LIMIT 1");
-        $section = $fallbackStmt->fetchColumn() ?: 'International';
+        $fallbackStmt = $pdo->query("SELECT id FROM types ORDER BY id ASC LIMIT 1");
+        $sectionTypeId = (int)($fallbackStmt->fetchColumn() ?: 0);
     }
 } catch (Throwable $e) {
-    if ($section === '') {
-        $section = 'International';
-    }
+    $sectionTypeId = max(1, $sectionTypeId);
 }
 
 // 1. Extraction automatique de la première image et de son ALT depuis le corps TinyMCE
@@ -51,14 +49,14 @@ $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $titre), '-'));
 // 3. Insertion ou Mise à jour en Base de Données
 if ($id > 0) {
     // UPDATE
-    $sql = "UPDATE articles SET titre=?, chapeau=?, corps=?, image_principale=?, image_alt=?, slug=?, section=?, date_publication=? WHERE id=?";
+    $sql = "UPDATE articles SET titre=?, chapeau=?, corps=?, image_principale=?, image_alt=?, slug=?, section_type_id=?, date_publication=? WHERE id=?";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titre, $chapeau, $corps, $image_principale, $image_alt, $slug, $section, $date_publication, $id]);
+    $stmt->execute([$titre, $chapeau, $corps, $image_principale, $image_alt, $slug, $sectionTypeId, $date_publication, $id]);
 } else {
     // INSERT
-    $sql = "INSERT INTO articles (titre, chapeau, corps, image_principale, image_alt, slug, section, date_publication) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO articles (titre, chapeau, corps, image_principale, image_alt, slug, section_type_id, date_publication) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titre, $chapeau, $corps, $image_principale, $image_alt, $slug, $section, $date_publication]);
+    $stmt->execute([$titre, $chapeau, $corps, $image_principale, $image_alt, $slug, $sectionTypeId, $date_publication]);
 }
 
 // Redirection vers le dashboard

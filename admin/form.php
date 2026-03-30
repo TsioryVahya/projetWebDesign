@@ -11,7 +11,7 @@ $article = [
     'titre' => '',
     'chapeau' => '',
     'corps' => '',
-    'section' => 'International',
+    'section_type_id' => 0,
     'date_publication' => date('Y-m-d H:i')
 ];
 
@@ -27,14 +27,14 @@ if ($id > 0) {
 
 $typeSections = [];
 try {
-    $typeStmt = $pdo->query("SELECT nom FROM types ORDER BY id ASC");
-    $typeSections = $typeStmt->fetchAll(PDO::FETCH_COLUMN);
+    $typeStmt = $pdo->query("SELECT id, nom FROM types ORDER BY id ASC");
+    $typeSections = $typeStmt->fetchAll();
 } catch (Throwable $e) {
-    $typeSections = ['International', 'Politique', 'Société', 'Économie'];
+    $typeSections = [];
 }
 
-if (!in_array($article['section'], $typeSections, true) && !empty($typeSections)) {
-    $article['section'] = $typeSections[0];
+if ((int)$article['section_type_id'] <= 0 && !empty($typeSections)) {
+    $article['section_type_id'] = (int)$typeSections[0]['id'];
 }
 ?>
 <!DOCTYPE html>
@@ -116,9 +116,9 @@ if (!in_array($article['section'], $typeSections, true) && !empty($typeSections)
                         <input type="datetime-local" name="date_publication" class="wp-input" style="margin-bottom: 15px;" value="<?= $article['date_publication'] ?>">
                         
                         <label>Section :</label>
-                        <select name="section" class="wp-select" style="margin-bottom: 20px;">
-                            <?php foreach($typeSections as $sec): ?>
-                                <option value="<?= $sec ?>" <?= $article['section'] == $sec ? 'selected' : '' ?>><?= $sec ?></option>
+                        <select name="section_type_id" class="wp-select" style="margin-bottom: 20px;">
+                            <?php foreach($typeSections as $type): ?>
+                                <option value="<?= (int)$type['id'] ?>" <?= (int)$article['section_type_id'] === (int)$type['id'] ? 'selected' : '' ?>><?= htmlspecialchars($type['nom']) ?></option>
                             <?php endforeach; ?>
                         </select>
                         

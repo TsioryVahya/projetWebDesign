@@ -9,10 +9,10 @@ $section = isset($_GET['section']) ? $_GET['section'] : null;
 
 // Requête SQL
 if ($section) {
-    $query = $pdo->prepare("SELECT * FROM articles WHERE section = ? ORDER BY date_publication DESC");
+    $query = $pdo->prepare("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id WHERE t.nom = ? ORDER BY a.date_publication DESC");
     $query->execute([$section]);
 } else {
-    $query = $pdo->query("SELECT * FROM articles ORDER BY date_publication DESC");
+    $query = $pdo->query("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id ORDER BY a.date_publication DESC");
 }
 
 $articles = $query->fetchAll();
@@ -52,8 +52,8 @@ include 'header.php';
             ?>
             <article class="list-card">
                 <div class="list-card-body">
-                    <?php if (!empty($article['section'])): ?>
-                        <span class="card-section"><?= htmlspecialchars($article['section']) ?></span>
+                    <?php if (!empty($article['section_nom'])): ?>
+                        <span class="card-section"><?= htmlspecialchars($article['section_nom']) ?></span>
                     <?php endif; ?>
 
                     <h2 class="card-title">
