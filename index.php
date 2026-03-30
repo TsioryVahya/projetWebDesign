@@ -30,11 +30,14 @@ $other_articles = array_slice($articles, 1);
     <?php
         $date_slug = date('Y/m/d', strtotime($featured['date_publication']));
         $url = "/actualite/{$date_slug}/" . ($featured['slug'] ?: 'article') . "_{$featured['id']}.html";
+        $featuredSection = $featured['section_nom'] ?? ($featured['section'] ?? '');
     ?>
     <section class="featured-article">
         <a href="<?= $url ?>" class="featured-link">
             <div class="featured-content">
-                <span class="card-section"><?= htmlspecialchars($featured['section']) ?></span>
+                <?php if (!empty($featuredSection)): ?>
+                    <span class="card-section"><?= htmlspecialchars((string)$featuredSection) ?></span>
+                <?php endif; ?>
                 <h1 class="featured-title"><?= htmlspecialchars($featured['titre']) ?></h1>
                 <p class="featured-excerpt"><?= htmlspecialchars(mb_substr(strip_tags($featured['chapeau']), 0, 250)) ?>...</p>
                 <time class="card-date">Publié le <?= date('d/m/Y à H\hi', strtotime($featured['date_publication'])) ?></time>
