@@ -7,12 +7,34 @@ require_once 'config.php';
 // Filtre par section ?
 $section = isset($_GET['section']) ? $_GET['section'] : null;
 
+// Pagination SQL
+$perPage = 6;
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+if ($section) {
+    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM articles a INNER JOIN types t ON t.id = a.section_type_id WHERE t.nom = ?");
+    $countStmt->execute([$section]);
+} else {
+    $countStmt = $pdo->query("SELECT COUNT(*) FROM articles");
+}
+
+$totalArticles = (int)$countStmt->fetchColumn();
+$totalPages = max(1, (int)ceil($totalArticles / $perPage));
+$currentPage = min($currentPage, $totalPages);
+$offset = ($currentPage - 1) * $perPage;
+
 // Requête SQL
 if ($section) {
-    $query = $pdo->prepare("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id WHERE t.nom = ? ORDER BY a.date_publication DESC");
-    $query->execute([$section]);
+    $query = $pdo->prepare("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id WHERE t.nom = ? ORDER BY a.date_publication DESC LIMIT :limit OFFSET :offset");
+    $query->bindValue(1, $section, PDO::PARAM_STR);
+    $query->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $query->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $query->execute();
 } else {
-    $query = $pdo->query("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id ORDER BY a.date_publication DESC");
+    $query = $pdo->prepare("SELECT a.*, t.nom AS section_nom FROM articles a INNER JOIN types t ON t.id = a.section_type_id ORDER BY a.date_publication DESC LIMIT :limit OFFSET :offset");
+    $query->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $query->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $query->execute();
 }
 
 $articles = $query->fetchAll();
@@ -24,6 +46,14 @@ include 'header.php';
 <?php
 $featured = isset($articles[0]) ? $articles[0] : null;
 $other_articles = array_slice($articles, 1);
+
+$buildPageUrl = function (int $page) use ($section): string {
+    $params = ['page' => $page];
+    if ($section) {
+        $params['section'] = $section;
+    }
+    return '/index.php?' . http_build_query($params);
+};
 ?>
 
 <?php if ($featured): ?>
@@ -118,6 +148,22 @@ $other_articles = array_slice($articles, 1);
     <?php endif; ?>
 </div>
 
+<?php if ($totalArticles > 0 && $totalPages > 1): ?>
+    <nav class="pagination" aria-label="Pagination des articles">
+        <?php if ($currentPage > 1): ?>
+            <a class="page-link" href="<?= htmlspecialchars($buildPageUrl($currentPage - 1)) ?>">Precedent</a>
+        <?php endif; ?>
+
+        <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+            <a class="page-link <?= $p === $currentPage ? 'is-active' : '' ?>" href="<?= htmlspecialchars($buildPageUrl($p)) ?>"><?= $p ?></a>
+        <?php endfor; ?>
+
+        <?php if ($currentPage < $totalPages): ?>
+            <a class="page-link" href="<?= htmlspecialchars($buildPageUrl($currentPage + 1)) ?>">Suivant</a>
+        <?php endif; ?>
+    </nav>
+<?php endif; ?>
+
 <style>
     /* ── STYLE DE "LA UNE" ────────────────────────────── */
     .featured-article {
@@ -157,6 +203,33 @@ $other_articles = array_slice($articles, 1);
         border: 0;
         border-top: 3px solid #000;
         margin: 40px 0;
+    }
+
+    .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 30px 0 10px;
+        justify-content: center;
+    }
+    .page-link {
+        display: inline-block;
+        min-width: 38px;
+        text-align: center;
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+    .page-link:hover {
+        border-color: #000;
+    }
+    .page-link.is-active {
+        background: #000;
+        color: #fff;
+        border-color: #000;
     }
 
     @media (max-width: 900px) {
