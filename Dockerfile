@@ -21,7 +21,7 @@ RUN mkdir -p public/uploads/articles \
     && chmod -R 777 /var/www/html
 
 COPY init.sh /init.sh
-RUN chmod +x /init.sh
+RUN sed -i 's/\r$//' /init.sh && chmod +x /init.sh
 
 WORKDIR /var/www/html
 
