@@ -24,6 +24,18 @@ if ($id > 0) {
         $article['date_publication'] = date('Y-m-d\TH:i', strtotime($article['date_publication']));
     }
 }
+
+$typeSections = [];
+try {
+    $typeStmt = $pdo->query("SELECT nom FROM types ORDER BY id ASC");
+    $typeSections = $typeStmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (Throwable $e) {
+    $typeSections = ['International', 'Politique', 'Société', 'Économie'];
+}
+
+if (!in_array($article['section'], $typeSections, true) && !empty($typeSections)) {
+    $article['section'] = $typeSections[0];
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -105,7 +117,7 @@ if ($id > 0) {
                         
                         <label>Section :</label>
                         <select name="section" class="wp-select" style="margin-bottom: 20px;">
-                            <?php foreach(['International', 'Politique', 'Société', 'Économie'] as $sec): ?>
+                            <?php foreach($typeSections as $sec): ?>
                                 <option value="<?= $sec ?>" <?= $article['section'] == $sec ? 'selected' : '' ?>><?= $sec ?></option>
                             <?php endforeach; ?>
                         </select>

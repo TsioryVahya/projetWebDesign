@@ -3,6 +3,23 @@
 -- Suppression des tables si elles existent déjà
 DROP TABLE IF EXISTS `articles`;
 DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `types`;
+
+-- Table des types (navigation)
+CREATE TABLE `types` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `nom` VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Types par défaut de la navigation
+INSERT INTO `types` (`nom`) VALUES
+('International'),
+('Politique'),
+('Société'),
+('Économie');
+
+INSERT INTO `types` (`nom`) VALUES
+('test');
 
 -- Table des utilisateurs (BackOffice)
 CREATE TABLE `users` (

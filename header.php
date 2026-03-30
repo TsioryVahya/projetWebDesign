@@ -136,15 +136,24 @@
 </head>
 <body>
 
+<?php
+$navTypes = [];
+try {
+    $navStmt = $pdo->query("SELECT nom FROM types ORDER BY id ASC");
+    $navTypes = $navStmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (Throwable $e) {
+    $navTypes = ['International', 'Politique', 'Société', 'Économie'];
+}
+?>
+
 <header>
     <div class="container">
         <div class="logo"><a href="/index.php"><?= SITE_NAME ?></a></div>
         <nav>
             <a href="/index.php">Accueil</a>
-            <a href="/index.php?section=International">International</a>
-            <a href="/index.php?section=Politique">Politique</a>
-            <a href="/index.php?section=Société">Société</a>
-            <a href="/index.php?section=Économie">Économie</a>
+            <?php foreach ($navTypes as $typeNom): ?>
+                <a href="/index.php?section=<?= urlencode($typeNom) ?>"><?= htmlspecialchars($typeNom) ?></a>
+            <?php endforeach; ?>
         </nav>
     </div>
 </header>

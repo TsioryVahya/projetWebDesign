@@ -14,8 +14,22 @@ $id = (int)$_POST['id'];
 $titre = trim($_POST['titre']);
 $chapeau = trim($_POST['chapeau']);
 $corps = $_POST['corps'];
-$section = $_POST['section'];
+$section = trim($_POST['section']);
 $date_publication = !empty($_POST['date_publication']) ? date('Y-m-d H:i:s', strtotime($_POST['date_publication'])) : date('Y-m-d H:i:s');
+
+// Sécurise la section: elle doit exister dans la table des types
+try {
+    $typeStmt = $pdo->prepare("SELECT COUNT(*) FROM types WHERE nom = ?");
+    $typeStmt->execute([$section]);
+    if ((int)$typeStmt->fetchColumn() === 0) {
+        $fallbackStmt = $pdo->query("SELECT nom FROM types ORDER BY id ASC LIMIT 1");
+        $section = $fallbackStmt->fetchColumn() ?: 'International';
+    }
+} catch (Throwable $e) {
+    if ($section === '') {
+        $section = 'International';
+    }
+}
 
 // 1. Extraction automatique de la première image et de son ALT depuis le corps TinyMCE
 $image_principale = '';
