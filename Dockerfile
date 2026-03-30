@@ -1,49 +1,31 @@
 FROM php:8.3-apache
 
-# Installer les dépendances système
+# Installer les dépendances système (intl, gd, zip, mysqli, pdo_mysql)
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libpng-dev \
     libzip-dev \
     unzip \
-    git \
     && docker-php-ext-install intl gd zip mysqli pdo_mysql
 
-# Activer les modules Apache pour la performance
-RUN a2enmod rewrite deflate expires headers
+# Activer les modules Apache
+RUN a2enmod rewrite headers
 
-# Configuration d'Apache pour pointer vers /public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+# Configuration d'Apache pour pointer vers la RACINE /var/www/html
+ENV APACHE_DOCUMENT_ROOT /var/www/html
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Ajouter les permissions pour le nouveau document root
-RUN echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>" >> /etc/apache2/apache2.conf
+RUN mkdir -p public/uploads/articles \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 777 /var/www/html
 
-# Créer les dossiers nécessaires dans writable et public/uploads et fixer les permissions
-RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
-    && mkdir -p public/uploads/articles \
-    && chown -R www-data:www-data writable public/uploads \
-    && chmod -R 775 writable public/uploads
-
-# Installer et copier Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
-
-# Installer les dépendances (le dossier vendor sera créé DANS le container)
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-progress
-
-# Copier et préparer le script d'entrée
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY init.sh /init.sh
+RUN chmod +x /init.sh
 
 WORKDIR /var/www/html
 
 EXPOSE 80
 
-# Définir le script d'entrée personnalisé
-ENTRYPOINT ["/entrypoint.sh"]
+# Utiliser le script d'initialisation pour le seeder auto
+ENTRYPOINT ["/init.sh"]

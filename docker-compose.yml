@@ -1,14 +1,11 @@
 services:
   app:
     build: .
-    container_name: projet-web-design-app
+    container_name: projet-vanilla-app
     ports:
       - "8080:80"
     volumes:
       - .:/var/www/html
-      - /var/www/html/vendor
-    environment:
-      - APP_DEBUG=true
     depends_on:
       - db
     networks:
@@ -16,7 +13,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: projet-web-design-db
+    container_name: projet-vanilla-db
     restart: always
     environment:
       MYSQL_DATABASE: journal_db
