@@ -79,7 +79,7 @@ if ((int)$article['section_type_id'] <= 0 && !empty($typeSections)) {
 <body>
 
 <div class="wp-bar">
-    <a href="index.php">← Retour au Dashboard</a>
+    <a href="dashboard.php">← Retour au Dashboard</a>
 </div>
 
 <div class="wp-wrap">
@@ -123,7 +123,7 @@ if ((int)$article['section_type_id'] <= 0 && !empty($typeSections)) {
                         </select>
                         
                         <input type="submit" class="wp-btn" value="<?= $id > 0 ? 'Mettre à jour' : 'Publier' ?>">
-                        <a href="index.php" class="wp-btn wp-btn-secondary">Annuler</a>
+                        <a href="articles.php" class="wp-btn wp-btn-secondary">Annuler</a>
                     </div>
                 </div>
 

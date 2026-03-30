@@ -118,7 +118,8 @@ $types = $listStmt->fetchAll();
 
 <div class="wp-sidebar">
     <a href="/index.php" style="font-weight: bold; border-bottom: 1px solid #3c434a; margin-bottom: 15px;">Voir le site</a>
-    <a href="index.php">Articles</a>
+    <a href="dashboard.php">Tableau de bord</a>
+    <a href="articles.php">Articles</a>
     <a href="form.php">Ajouter</a>
     <a href="types.php" style="background:#2271b1">Types</a>
     <a href="logout.php" style="color: #f08080;">Deconnexion</a>
