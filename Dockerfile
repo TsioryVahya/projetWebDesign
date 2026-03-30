@@ -30,8 +30,12 @@ RUN mkdir -p writable/cache writable/logs writable/session writable/debugbar \
     && chown -R www-data:www-data writable public/uploads \
     && chmod -R 775 writable public/uploads
 
-# Installer Composer
+# Installer et copier Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+
+# Installer les dépendances (le dossier vendor sera créé DANS le container)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-progress
 
 # Copier et préparer le script d'entrée
 COPY entrypoint.sh /entrypoint.sh

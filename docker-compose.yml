@@ -6,6 +6,7 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
+      - /var/www/html/vendor
     environment:
       - APP_DEBUG=true
     depends_on:
