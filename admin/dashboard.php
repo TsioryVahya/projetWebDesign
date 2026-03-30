@@ -17,6 +17,7 @@ $articlesByType = $pdo->query("SELECT t.nom, COUNT(a.id) AS count FROM types t L
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Tableau de bord d'administration avec statistiques des articles et des types de navigation.">
     <title>Dashboard - Administration</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,16 +70,16 @@ $articlesByType = $pdo->query("SELECT t.nom, COUNT(a.id) AS count FROM types t L
 </head>
 <body>
 
-<div class="wp-sidebar">
+<nav class="wp-sidebar" aria-label="Navigation administration">
     <a href="/index.php" style="font-weight: bold; border-bottom: 1px solid #3c434a; margin-bottom: 15px;">Voir le site</a>
     <a href="dashboard.php" class="active">Tableau de bord</a>
     <a href="articles.php">Articles</a>
     <a href="form.php">Ajouter</a>
     <a href="types.php">Types</a>
     <a href="logout.php" style="color: #f08080;">Deconnexion</a>
-</div>
+</nav>
 
-<div class="wp-content">
+<main class="wp-content">
     <div class="wrap">
         <h1>Bienvenue au tableau de bord</h1>
 
@@ -155,7 +156,7 @@ $articlesByType = $pdo->query("SELECT t.nom, COUNT(a.id) AS count FROM types t L
             </div>
         </div>
     </div>
-</div>
+</main>
 
 </body>
 </html>
