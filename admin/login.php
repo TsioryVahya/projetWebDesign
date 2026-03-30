@@ -57,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="post">
         <div class="input-group">
             <label>Identifiant</label>
-            <input type="text" name="username" required autofocus>
+            <input type="text" name="username" value="admin" required>
         </div>
         <div class="input-group">
             <label>Mot de passe</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" value="admin123" required>
         </div>
         <button type="submit" class="btn">Se connecter</button>
     </form>
