@@ -21,11 +21,41 @@ $title = $section ? $section : "Accueil";
 include 'header.php';
 ?>
 
+<?php
+$featured = isset($articles[0]) ? $articles[0] : null;
+$other_articles = array_slice($articles, 1);
+?>
+
+<?php if ($featured): ?>
+    <?php
+        $date_slug = date('Y/m/d', strtotime($featured['date_publication']));
+        $url = "/actualite/{$date_slug}/" . ($featured['slug'] ?: 'article') . "_{$featured['id']}.html";
+    ?>
+    <section class="featured-article">
+        <a href="<?= $url ?>" class="featured-link">
+            <div class="featured-content">
+                <span class="card-section"><?= htmlspecialchars($featured['section']) ?></span>
+                <h1 class="featured-title"><?= htmlspecialchars($featured['titre']) ?></h1>
+                <p class="featured-excerpt"><?= htmlspecialchars(mb_substr(strip_tags($featured['chapeau']), 0, 250)) ?>...</p>
+                <time class="card-date">Publié le <?= date('d/m/Y à H\hi', strtotime($featured['date_publication'])) ?></time>
+            </div>
+            <?php if (!empty($featured['image_principale'])): ?>
+                <div class="featured-image">
+                    <img src="/public/uploads/articles/<?= htmlspecialchars($featured['image_principale']) ?>" 
+                         alt="<?= htmlspecialchars($featured['image_alt'] ?? '') ?>"
+                         fetchpriority="high">
+                </div>
+            <?php endif; ?>
+        </a>
+    </section>
+    <hr class="section-divider">
+<?php endif; ?>
+
 <div class="article-list">
-    <?php if ($articles): ?>
-        <?php foreach ($articles as $idx => $article): ?>
+    <?php if ($other_articles): ?>
+        <?php foreach ($other_articles as $idx => $article): ?>
             <?php
-                // Nettoyage de l'extrait (Chapeau ou Corps)
+                // Nettoyage de l'extrait
                 $chapeau_brut = strip_tags($article['chapeau'] ?? '');
                 $chapeau_brut = html_entity_decode($chapeau_brut, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $chapeau_brut = preg_replace('/[\s\x{00A0}]+/u', ' ', $chapeau_brut);
@@ -45,8 +75,6 @@ include 'header.php';
                     $extrait = mb_substr($extrait, 0, mb_strrpos($extrait, ' ')) . '…';
                 }
 
-                // Génération de l'URL propre style "Le Monde" 
-                // Format : /actualite/YYYY/MM/DD/slug_id.html
                 $date_slug = date('Y/m/d', strtotime($article['date_publication']));
                 $url = "/actualite/{$date_slug}/" . ($article['slug'] ?: 'article') . "_{$article['id']}.html";
             ?>
@@ -76,16 +104,65 @@ include 'header.php';
                         <img src="/public/uploads/articles/<?= htmlspecialchars($article['image_principale']) ?>"
                              alt="<?= htmlspecialchars($article['image_alt'] ?? '') ?>"
                              width="420" height="220"
-                             fetchpriority="<?= $idx === 0 ? 'high' : 'auto' ?>"
-                             loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                             loading="lazy"
                              decoding="async">
                     </a>
                 <?php endif; ?>
             </article>
         <?php endforeach; ?>
-    <?php else: ?>
+    <?php elseif (!$featured): ?>
         <p>Aucun article trouvé.</p>
     <?php endif; ?>
 </div>
+
+<style>
+    /* ── STYLE DE "LA UNE" ────────────────────────────── */
+    .featured-article {
+        margin-bottom: 40px;
+        padding: 20px 0;
+    }
+    .featured-link {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 30px;
+        text-decoration: none;
+        color: inherit;
+        align-items: center;
+    }
+    .featured-title {
+        font-family: var(--font-serif);
+        font-size: 2.8rem;
+        font-weight: 900;
+        line-height: 1.1;
+        margin: 15px 0;
+    }
+    .featured-excerpt {
+        font-family: var(--font-serif);
+        font-size: 1.25rem;
+        line-height: 1.5;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .featured-image img {
+        width: 100%;
+        height: 450px;
+        object-fit: cover;
+        display: block;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .section-divider {
+        border: 0;
+        border-top: 3px solid #000;
+        margin: 40px 0;
+    }
+
+    @media (max-width: 900px) {
+        .featured-link {
+            grid-template-columns: 1fr;
+        }
+        .featured-title { font-size: 2rem; }
+        .featured-image img { height: 300px; }
+    }
+</style>
 
 <?php include 'footer.php'; ?>
